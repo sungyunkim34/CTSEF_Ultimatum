@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ultimatum Game Experiment</title>
+  <script src="https://unpkg.com/jspsych@7.3.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
+  <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" />
+</head>
+<body></body>
+<script>
+  var timeline = [];
+
+  // ===============================
+  // 0. Greeting Page
+  // ===============================
+  var greeting = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <h2>Hello!</h2>
+      <p>My name is <b>Sungyun Kim</b>, and I am a student at <b>Hotchkiss School</b>.</p>
+      <p>This survey has been created to collect a <i>test dataset</i> for my Science Fair project entitled:<br>
+      <i>"Analyzing Fairness Learning Dynamics in the Ultimatum Game via Softmax-Policy Q-Learning Model"</i>.</p>
+      <p>Participants who sincerely complete this survey will be entered into a random drawing, and <b>3 people</b> will receive a Starbucks dessert coupon as a thank-you gift.</p>
+      <p>Email addresses will only be used to generate the drawing list. The survey responses themselves will <b>not</b> be linked to your email, and therefore your responses remain completely <b>anonymous</b>.</p>
+    `,
+    choices: ['Next']
+  };
+  timeline.push(greeting);
+
+  // ===============================
+  // 1. Intro
+  // ===============================
+  var intro = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <h2>Welcome to the Ultimatum Game Experiment</h2>
+      <p>This study consists of a short pre-survey and 10 rounds of decision-making.</p>
+      <p>All amounts shown are <b>virtual</b>. Please answer as if they were real.</p>
+    `,
+    choices: ['Start']
+  };
+  timeline.push(intro);
+
+  // ===============================
+  // 2. Pre-survey: Demographics
+  // ===============================
+  var demographics = {
+    type: jsPsychSurveyHtmlForm,
+    preamble: '<h3>Pre-survey: Demographics</h3>',
+    html: `
+      <p>Age: <input name="age" type="number" min="10" max="99" required></p>
+      <p>Gender:
+        <select name="gender" required>
+          <option value="">--Select--</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </p>
+      <p>Monthly allowance or income level:
+        <select name="income" required>
+          <option value="">--Select--</option>
+          <option value="0-30">$0 ~ $30</option>
+          <option value="30-60">$30 ~ $60</option>
+          <option value="60-100">$60 ~ $100</option>
+          <option value="100-150">$100 ~ $150</option>
+          <option value="150+">$150+</option>
+        </select>
+      </p>
+    `
+  };
+  timeline.push(demographics);
+
+  // ===============================
+  // 3. Pre-survey: Subjective Economic Affluence
+  // ===============================
+  var economy = {
+    type: jsPsychSurveyHtmlForm,
+    preamble: '<h3>Pre-survey: Subjective Economic Affluence</h3>',
+    html: `
+      <p>Rate from 1 (Strongly Disagree) to 7 (Strongly Agree)</p>
+      <p>I have enough money to buy what I need. <input name="econ1" type="number" min="1" max="7" required></p>
+      <p>I often feel stressed because of financial insufficiency. <input name="econ2" type="number" min="1" max="7" required></p>
+    `
+  };
+  timeline.push(economy);
+
+  // ===============================
+  // 4. Pre-survey: Personality (TIPI short)
+  // ===============================
+  var personality = {
+    type: jsPsychSurveyHtmlForm,
+    preamble: '<h3>Pre-survey: Personality</h3>',
+    html: `
+      <p>1 (Strongly Disagree) ~ 7 (Strongly Agree)</p>
+      <p>I am extraverted and outgoing. <input name="p1" type="number" min="1" max="7" required></p>
+      <p>I am dependable and organized. <input name="p2" type="number" min="1" max="7" required></p>
+      <p>I am sympathetic and warm. <input name="p3" type="number" min="1" max="7" required></p>
+      <p>I am anxious and easily upset. <input name="p4" type="number" min="1" max="7" required></p>
+      <p>I am open to new experiences. <input name="p5" type="number" min="1" max="7" required></p>
+    `
+  };
+  timeline.push(personality);
+
+  // ===============================
+  // 5. Ultimatum Game Setup
+  // ===============================
+  var totalAmounts = [100, 500, 2000];
+  var ratios = [
+    {label: "50:50", self: 0.5, other: 0.5},
+    {label: "33:67", self: 0.33, other: 0.67},
+    {label: "25:75", self: 0.25, other: 0.75}
+  ];
+  var relations = ["friend", "stranger", "enemy"];
+
+  var allTrials = [];
+  totalAmounts.forEach(function(total){
+    ratios.forEach(function(r){
+      relations.forEach(function(rel){
+        allTrials.push({
+          total: total,
+          self_amt: Math.round(total * r.self),
+          other_amt: Math.round(total * r.other),
+          relation: rel,
+          ratio: r.label
+        });
+      });
+    });
+  });
+
+  // pick 10 random trials
+  var selectedTrials = jsPsych.randomization.sampleWithoutReplacement(allTrials, 10);
+
+  selectedTrials.forEach(function(trial, idx){
+    timeline.push({
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+        <h3>Trial ${idx+1} / 10</h3>
+        <p>Total: $${trial.total}</p>
+        <p>Offer: You $${trial.self_amt} / Other $${trial.other_amt}</p>
+        <p>Proposer: ${trial.relation}</p>
+      `,
+      choices: ['Accept', 'Reject'],
+      data: trial
+    });
+  });
+
+  // ===============================
+  // 6. Closing page
+  // ===============================
+  var ending = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+      <h2>End of Experiment</h2>
+      <p>Thank you for participating!</p>
+    `,
+    choices: ['Finish']
+  };
+  timeline.push(ending);
+
+  // ===============================
+  // 7. Run
+  // ===============================
+  jsPsych.init({
+    timeline: timeline,
+    on_finish: function(){
+      jsPsych.data.displayData();
+      jsPsych.data.get().localSave('csv','ultimatum_results.csv');
+    }
+  });
+</script>
+</html>
