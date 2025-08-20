@@ -10,6 +10,8 @@
   <script src="https://unpkg.com/@jspsych/plugin-html-button-response"></script>
   <!-- CSS -->
   <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" />
+  <!-- optional: remove favicon 404 -->
+  <link rel="icon" href="data:,">
 </head>
 <body></body>
 <script>
@@ -19,7 +21,7 @@
   // 0. Greeting Page
   // ===============================
   var greeting = {
-    type: jsPsychHtmlButtonResponse,
+    type: jsPsych.plugins['html-button-response'],
     stimulus: `
       <h2>Hello!</h2>
       <p>My name is <b>Sungyun Kim</b>, and I am a student at <b>Hotchkiss School</b>.</p>
@@ -36,7 +38,7 @@
   // 1. Intro
   // ===============================
   var intro = {
-    type: jsPsychHtmlButtonResponse,
+    type: jsPsych.plugins['html-button-response'],
     stimulus: `
       <h2>Welcome to the Ultimatum Game Experiment</h2>
       <p>This study consists of a short pre-survey and 10 rounds of decision-making.</p>
@@ -50,7 +52,7 @@
   // 2. Pre-survey: Demographics
   // ===============================
   var demographics = {
-    type: jsPsychSurveyHtmlForm,
+    type: jsPsych.plugins['survey-html-form'],
     preamble: '<h3>Pre-survey: Demographics</h3>',
     html: `
       <p>Age: <input name="age" type="number" min="10" max="99" required></p>
@@ -80,7 +82,7 @@
   // 3. Pre-survey: Subjective Economic Affluence
   // ===============================
   var economy = {
-    type: jsPsychSurveyHtmlForm,
+    type: jsPsych.plugins['survey-html-form'],
     preamble: '<h3>Pre-survey: Subjective Economic Affluence</h3>',
     html: `
       <p>Rate from 1 (Strongly Disagree) to 7 (Strongly Agree)</p>
@@ -94,7 +96,7 @@
   // 4. Pre-survey: Personality (TIPI short)
   // ===============================
   var personality = {
-    type: jsPsychSurveyHtmlForm,
+    type: jsPsych.plugins['survey-html-form'],
     preamble: '<h3>Pre-survey: Personality</h3>',
     html: `
       <p>1 (Strongly Disagree) ~ 7 (Strongly Agree)</p>
@@ -138,7 +140,7 @@
 
   selectedTrials.forEach(function(trial, idx){
     timeline.push({
-      type: jsPsychHtmlButtonResponse,
+      type: jsPsych.plugins['html-button-response'],
       stimulus: `
         <h3>Trial ${idx+1} / 10</h3>
         <p>Total: $${trial.total}</p>
@@ -154,7 +156,7 @@
   // 6. Closing page
   // ===============================
   var ending = {
-    type: jsPsychHtmlButtonResponse,
+    type: jsPsych.plugins['html-button-response'],
     stimulus: `
       <h2>End of Experiment</h2>
       <p>Thank you for participating!</p>
@@ -166,7 +168,7 @@
   // ===============================
   // 7. Run (v7 style)
   // ===============================
-  var jsPsych = initJsPsych({
+  const jsPsych = initJsPsych({
     on_finish: function() {
       jsPsych.data.displayData();
       jsPsych.data.get().localSave('csv','ultimatum_results.csv');
