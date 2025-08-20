@@ -164,14 +164,15 @@
   timeline.push(ending);
 
   // ===============================
-  // 7. Run
+  // 7. Run (v7 style)
   // ===============================
-  jsPsych.init({
-    timeline: timeline,
-    on_finish: function(){
+  var jsPsych = initJsPsych({
+    on_finish: function() {
       jsPsych.data.displayData();
       jsPsych.data.get().localSave('csv','ultimatum_results.csv');
     }
   });
+
+  jsPsych.run(timeline);
 </script>
 </html>
