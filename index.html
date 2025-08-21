@@ -15,6 +15,14 @@
 </head>
 <body></body>
 <script>
+  // ✅ 먼저 jsPsych 초기화
+  const jsPsych = initJsPsych({
+    on_finish: function() {
+      jsPsych.data.displayData();
+      jsPsych.data.get().localSave('csv','ultimatum_results.csv');
+    }
+  });
+
   var timeline = [];
 
   // ===============================
@@ -159,22 +167,4 @@
     type: jsPsych.plugins['html-button-response'],
     stimulus: `
       <h2>End of Experiment</h2>
-      <p>Thank you for participating!</p>
-    `,
-    choices: ['Finish']
-  };
-  timeline.push(ending);
-
-  // ===============================
-  // 7. Run (v7 style)
-  // ===============================
-  const jsPsych = initJsPsych({
-    on_finish: function() {
-      jsPsych.data.displayData();
-      jsPsych.data.get().localSave('csv','ultimatum_results.csv');
-    }
-  });
-
-  jsPsych.run(timeline);
-</script>
-</html>
+      <p>Thank you
